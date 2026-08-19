@@ -2,112 +2,73 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
+<title>Wald Uhr</title>
 <style>
-  body {
+  * {
     margin: 0;
-    background: #0d1117;
-    color: #fff;
-    font-family: Arial, sans-serif;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    height: 100vh;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #ffffff;
+    background: url("https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg") center/cover no-repeat fixed;
+  }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
+    z-index: 0;
+  }
+  .clock {
+    position: relative;
+    z-index: 1;
     text-align: center;
   }
   .time {
-    font-size: 80px;
+    font-size: 96px;
     font-weight: 600;
+    letter-spacing: 4px;
   }
   .date {
-    font-size: 28px;
-    opacity: 0.8;
-    margin-bottom: 40px;
-  }
-  .weather-icon {
-    width: 120px;
-    height: 120px;
-    margin-bottom: 20px;
-  }
-  .temp {
-    font-size: 60px;
-    font-weight: 500;
-  }
-  .desc {
-    font-size: 26px;
-    opacity: 0.8;
+    margin-top: 12px;
+    font-size: 24px;
+    opacity: 0.85;
   }
 </style>
 </head>
 <body>
-
-<div class="time" id="time"></div>
-<div class="date" id="date"></div>
-
-<img id="icon" class="weather-icon" src="" alt="Wetter Icon">
-<div class="temp" id="temp"></div>
-<div class="desc" id="desc"></div>
+<div class="overlay"></div>
+<div class="clock">
+  <div id="time" class="time"></div>
+  <div id="date" class="date"></div>
+</div>
 
 <script>
-// Uhrzeit
 function updateClock() {
   const now = new Date();
-  document.getElementById("time").textContent =
-    now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+  const timeEl = document.getElementById("time");
+  const dateEl = document.getElementById("date");
 
-  document.getElementById("date").textContent =
-    now.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" });
+  timeEl.textContent = now.toLocaleTimeString("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  dateEl.textContent = now.toLocaleDateString("de-DE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
 }
-setInterval(updateClock, 1000);
+
 updateClock();
-
-// Wetter
-async function loadWeather() {
-  const lat = 51.058;  // Frankenberg (Eder)
-  const lon = 8.801;
-
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-  const w = data.current;
-
-  const icons = {
-    0: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/clear-day.svg",
-    1: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/mostly-clear-day.svg",
-    2: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/partly-cloudy-day.svg",
-    3: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/cloudy.svg",
-    45: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/fog.svg",
-    48: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/fog.svg",
-    51: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/drizzle.svg",
-    61: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/rain.svg",
-    71: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/snow.svg",
-    80: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/showers.svg",
-    95: "https://raw.githubusercontent.com/basmilius/weather-icons/master/production/fill/svg/thunderstorms.svg"
-  };
-
-  const descMap = {
-    0: "Klar",
-    1: "Überwiegend klar",
-    2: "Teilweise bewölkt",
-    3: "Bewölkt",
-    45: "Nebel",
-    48: "Reifnebel",
-    51: "Nieselregen",
-    61: "Regen",
-    71: "Schnee",
-    80: "Schauer",
-    95: "Gewitter"
-  };
-
-  document.getElementById("icon").src = icons[w.weather_code] || icons[3];
-  document.getElementById("temp").textContent = w.temperature_2m + "°C";
-  document.getElementById("desc").textContent = descMap[w.weather_code] || "Wetter";
-}
-
-loadWeather();
+setInterval(updateClock, 1000);
 </script>
-
 </body>
 </html>
